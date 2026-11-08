@@ -1,0 +1,101 @@
+<title>Trading Risk Calculator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<main class="wrap">
+  <header class="top">
+    <p class="eyebrow">Position Size · Risk Management</p>
+    <h1>Trading Risk Calculator</h1>
+    <p class="lead">กรอกเงินทุน ความเสี่ยงที่รับได้ และจุด Stop Loss แล้วรู้ทันทีว่าควรเปิดกี่ Lot</p>
+  </header>
+
+  <div class="grid">
+    <!-- ===== ฟอร์มกรอกข้อมูล ===== -->
+    <form id="calcForm" class="panel" novalidate>
+      <h2>ข้อมูลการเทรด</h2>
+
+      <div class="field">
+        <label for="balance">เงินทุนในพอร์ต (USD)</label>
+        <input id="balance" type="number" inputmode="decimal" min="0" step="any" value="1000">
+      </div>
+
+      <div class="field">
+        <label for="riskPct">ความเสี่ยงต่อไม้ (%)</label>
+        <input id="riskPct" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="1">
+        <div class="chips" role="group" aria-label="เลือกความเสี่ยงด่วน">
+          <button type="button" class="chip" data-risk="0.5">0.5%</button>
+          <button type="button" class="chip" data-risk="1">1%</button>
+          <button type="button" class="chip" data-risk="2">2%</button>
+          <button type="button" class="chip" data-risk="5">5%</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="instrument">สินค้าที่เทรด</label>
+        <select id="instrument">
+          <option value="10">Forex คู่เงินหลัก เช่น EUR/USD ($10 ต่อ pip ต่อ 1 Lot)</option>
+          <option value="10">ทองคำ XAU/USD (1 pip = 0.10, $10 ต่อ pip ต่อ 1 Lot)</option>
+          <option value="custom">กำหนดเอง</option>
+        </select>
+      </div>
+
+      <div class="field" id="pipValueField" hidden>
+        <label for="pipValue">มูลค่าต่อ pip ต่อ 1 Lot (USD)</label>
+        <input id="pipValue" type="number" inputmode="decimal" min="0" step="any" value="10">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="slPips">Stop Loss (pips)</label>
+          <input id="slPips" type="number" inputmode="decimal" min="0" step="any" value="50">
+        </div>
+        <div class="field">
+          <label for="tpPips">Take Profit (pips)</label>
+          <input id="tpPips" type="number" inputmode="decimal" min="0" step="any" value="100">
+        </div>
+      </div>
+
+      <p id="error" class="error" role="alert" hidden></p>
+
+      <div class="actions">
+        <button type="submit" class="btn">คำนวณ</button>
+        <button type="button" id="resetBtn" class="btn ghost">ล้างค่า</button>
+      </div>
+    </form>
+
+    <!-- ===== ผลลัพธ์ ===== -->
+    <section class="panel result" aria-live="polite">
+      <h2>ผลการคำนวณ</h2>
+
+      <div class="lot">
+        <span class="lot-label">ขนาดที่ควรเปิด</span>
+        <span class="lot-value"><span id="lotOut">0.02</span> <small>Lot</small></span>
+      </div>
+
+      <div id="levelBadge" class="badge safe">
+        <span class="dot"></span><span id="levelText">ปลอดภัย</span>
+      </div>
+      <p id="levelNote" class="note"></p>
+
+      <dl class="stats">
+        <div><dt>เงินที่ยอมเสียได้</dt><dd id="riskAmtOut">$10.00</dd></div>
+        <div><dt>เสียจริงถ้าโดน SL</dt><dd id="actualRiskOut" class="neg">-$10.00</dd></div>
+        <div><dt>กำไรถ้าถึง TP</dt><dd id="profitOut" class="pos">+$20.00</dd></div>
+        <div><dt>Risk : Reward</dt><dd id="rrOut">1 : 2.00</dd></div>
+      </dl>
+
+      <h3>ถ้าแพ้ติดกัน พอร์ตจะเหลือเท่าไร</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>แพ้ติดกัน</th><th>เงินคงเหลือ</th><th>ลดลง</th></tr></thead>
+          <tbody id="streakBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer class="foot">เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน · มูลค่าต่อ pip จริงขึ้นกับโบรกเกอร์และคู่เงิน</footer>
+</main>
+
+<script src="script.js"></script>
